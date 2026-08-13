@@ -5,11 +5,11 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-function init3Dviewer() {
+function initmagnMotr() {
   const container = document.getElementById("container3D");
 
   if (!container) {
-    setTimeout(init3Dviewer, 100);
+    setTimeout(initmagnMotr, 100);
     return;
   }
 
@@ -28,10 +28,15 @@ function init3Dviewer() {
   const pistons = [];
 
   let mainAngle = 0;
-  const ROTATION_SPEED = 0.02;
+  
+  // DYNAMIC SIMULATION VARIABLES
+  let currentAngularVelocity = 0.01; // Starting rotational speed
+  let magneticStrength = 1.0;        // Push force slider value (0.0 to 2.0)
+  let shaftLoad = 0.3;               // Load resistance slider value (0.0 to 2.0)
+  const ROTOR_INERTIA = 0.85;        // Resistance to acceleration change
 
-  const STROKE_LENGTH = 55;
-  const BASE_SAFETY_GAP = 25.0;
+  const STROKE_LENGTH = 65;// PISTON POSITION
+  const BASE_SAFETY_GAP = 65;
   const PHASE_OFFSET = Math.PI / 2;
 
   // Ground Grid
@@ -45,9 +50,9 @@ function init3Dviewer() {
   const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
   renderer.setSize(width, height);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
   container.appendChild(renderer.domElement);
 
-  // Updated to use imported OrbitControls directly
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
 
@@ -59,11 +64,73 @@ function init3Dviewer() {
   frontLight.position.set(100, 100, 100);
   scene.add(frontLight);
 
+  if (getComputedStyle(container).position === "static") {
+    container.style.position = "relative";
+  }
+
   // =============================================================================
-  // 2. GLTF ASSET LOADING & MINIMAL BLUE PROGRESS BAR
+  // 2. UI CONTROL PANEL OVERLAY (Shaft Load & Magnetic Strength)
   // =============================================================================
-  
-  // Minimal Progress Bar Track
+  const controlsPanel = document.createElement("div");
+  controlsPanel.style.position = "absolute";
+  controlsPanel.style.bottom = "1px";
+  controlsPanel.style.transform = "translateY(-50%)";
+  controlsPanel.style.left = "45px";
+  controlsPanel.style.background = "rgba(10, 15, 25, 0.3)";//transparency
+  controlsPanel.style.backdropFilter = "blur(8px)";
+  controlsPanel.style.border = "1px solid rgba(0, 136, 255, 0.3)";
+  controlsPanel.style.padding = "10px 14px";
+  controlsPanel.style.borderRadius = "8px";
+  controlsPanel.style.color = "#ffffff";
+  controlsPanel.style.fontFamily = "'Montserrat', sans-serif";
+  controlsPanel.style.fontSize = "10px";
+  controlsPanel.style.zIndex = "50";
+  controlsPanel.style.boxShadow = "0 4px 20px rgba(0,0,0,0.5)";
+  controlsPanel.style.width = "220px";
+
+  controlsPanel.innerHTML = `
+    <div style="font-weight: bold; margin-bottom: 10px; color: #0088ff; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">Motor Dynamics</div>
+    
+    <label style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+      <span>Magnetic Force:</span>
+      <span id="magVal" style="color: #1d27b9;">1.0x</span>
+    </label>
+    <input type="range" id="magSlider" min="0" max="2" step="0.05" value="1.0" style="width: 100%; margin-bottom: 10px; accent-color: #0088ff; cursor: pointer;">
+    
+    <label style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+      <span>Shaft Load:</span>
+      <span id="loadVal" style="color: #ff5555;">0.3x</span>
+    </label>
+    <input type="range" id="loadSlider" min="0" max="2" step="0.05" value="0.3" style="width: 100%; margin-bottom: 10px; accent-color: #ff5555; cursor: pointer;">
+    
+    <div style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px; margin-top: 4px;">
+      <span>Shaft Velocity:</span>
+      <span id="speedVal" style="font-weight: bold; color: #ffffff;">0 RPM</span>
+    </div>
+  `;
+
+  container.appendChild(controlsPanel);
+
+  // Control Listeners
+  const magSlider = controlsPanel.querySelector("#magSlider");
+  const loadSlider = controlsPanel.querySelector("#loadSlider");
+  const magVal = controlsPanel.querySelector("#magVal");
+  const loadVal = controlsPanel.querySelector("#loadVal");
+  const speedVal = controlsPanel.querySelector("#speedVal");
+
+  magSlider.addEventListener("input", (e) => {
+    magneticStrength = parseFloat(e.target.value);
+    magVal.innerText = magneticStrength.toFixed(1) + "x";
+  });
+
+  loadSlider.addEventListener("input", (e) => {
+    shaftLoad = parseFloat(e.target.value);
+    loadVal.innerText = shaftLoad.toFixed(1) + "x";
+  });
+
+  // =============================================================================
+  // 3. GLTF ASSET LOADING & PROGRESS BAR
+  // =============================================================================
   const progressBarTrack = document.createElement("div");
   progressBarTrack.style.position = "absolute";
   progressBarTrack.style.top = "50%";
@@ -76,36 +143,28 @@ function init3Dviewer() {
   progressBarTrack.style.overflow = "hidden";
   progressBarTrack.style.zIndex = "100";
 
-  // Blue Fill Bar
   const progressBarFill = document.createElement("div");
   progressBarFill.style.width = "0%";
   progressBarFill.style.height = "100%";
-  progressBarFill.style.background = "#0088ff"; // Vibrant Electric Blue
-  progressBarFill.style.boxShadow = "0 0 8px #0088ff"; // Subtle glow
+  progressBarFill.style.background = "#0088ff";
+  progressBarFill.style.boxShadow = "0 0 8px #0088ff";
   progressBarFill.style.borderRadius = "3px";
   progressBarFill.style.transition = "width 0.15s ease-out";
 
   progressBarTrack.appendChild(progressBarFill);
   container.appendChild(progressBarTrack);
 
-  if (getComputedStyle(container).position === "static") {
-    container.style.position = "relative";
-  }
-
   const loader = new GLTFLoader();
-  const modelPath = (typeof viewerData !== "undefined" && viewerData.modelUrl)
-    ? viewerData.modelUrl
+  const modelPath = (typeof magnaData !== "undefined" && magnaData.modelUrl)
+    ? magnaData.modelUrl
     : "assets/magn-Motr.glb";
 
-  console.log("3D viewer loading model from:", modelPath);
+  console.log("magnMotr loading model from:", modelPath);
 
   loader.load(
     modelPath,
-    // 1. Success Callback
     function (gltf) {
-      console.log("3D viewer: GLTF loaded successfully!", gltf);
-      
-      // Remove progress bar when finished
+      console.log("magnMotr: GLTF loaded successfully!", gltf);
       progressBarTrack.remove();
 
       object = gltf.scene;
@@ -159,14 +218,14 @@ function init3Dviewer() {
 
       const maxDim = Math.max(size.x, size.y, size.z);
       const fov = camera.fov * (Math.PI / 180);
-      let cameraZ = Math.abs((maxDim / 2) / Math.tan(fov / 2)) * 2.5;
+      let distance = Math.abs((maxDim / 2) / Math.tan(fov / 2)) * 1.35;
 
-      camera.position.set(0, maxDim / 2, cameraZ || 25);
+      // Angled startup camera position
+      camera.position.set(distance * 0.9, maxDim * 0.4, distance);
       camera.lookAt(0, 0, 0);
       controls.target.set(0, 0, 0);
       controls.update();
     },
-    // 2. Progress Callback (Updates fill width)
     function (xhr) {
       if (xhr.lengthComputable && xhr.total > 0) {
         const percent = Math.round((xhr.loaded / xhr.total) * 100);
@@ -175,9 +234,8 @@ function init3Dviewer() {
         progressBarFill.style.width = "100%";
       }
     },
-    // 3. Error Callback
     function (error) {
-      console.error("3D viewer GLTF Load Error:", error);
+      console.error("magnMotr GLTF Load Error:", error);
       progressBarTrack.remove();
 
       const errDiv = document.createElement("div");
@@ -192,45 +250,65 @@ function init3Dviewer() {
       errDiv.style.borderRadius = "4px";
       errDiv.style.zIndex = "999";
       errDiv.style.border = "1px solid #ff4444";
-      errDiv.innerHTML = `<strong>3D viewer Error:</strong> Cannot load 3D file.<br>Path: <code>${modelPath}</code>`;
+      errDiv.innerHTML = `<strong>magnMotr Error:</strong> Cannot load 3D file.<br>Path: <code>${modelPath}</code>`;
       container.appendChild(errDiv);
     }
   );
 
   // =============================================================================
-  // 3. ANIMATION LOOP & RESIZE HANDLER
+  // 4. DYNAMIC PHYSICS & ANIMATION LOOP
   // =============================================================================
   function animate() {
     requestAnimationFrame(animate);
 
     if (rotor) {
-      mainAngle += ROTATION_SPEED;
+      // 1. Net Torque calculation: (Magnetic Push Force - Shaft Resistance)
+      const targetSpeed = Math.max(0, (magneticStrength * 0.05) - (shaftLoad * 0.035));
+
+      // 2. Smoothly accelerate/decelerate velocity based on rotational inertia
+      currentAngularVelocity += (targetSpeed - currentAngularVelocity) * (1 - ROTOR_INERTIA);
+
+      // Stop subtle drift when stalled
+      if (currentAngularVelocity < 0.0001) currentAngularVelocity = 0;
+
+      // 3. Increment Rotor & Cam angle derived from dynamic speed
+      mainAngle += currentAngularVelocity;
       rotor.rotation.z = mainAngle;
 
+      // 4. Update Pistons sliding against Cam profile
       pistons.forEach((pistonObj, index) => {
         const pairPhase = (index % 2 === 0) ? 0 : Math.PI;
         const pushFactor = 0.5 + 0.5 * Math.sin((mainAngle * 2) + pairPhase + PHASE_OFFSET);
         pistonObj.mesh.position.z = pistonObj.baseZ + BASE_SAFETY_GAP - (pushFactor * STROKE_LENGTH);
       });
+
+      // 5. Update UI speed readout (Simulated RPM display)
+      const rpm = Math.round(currentAngularVelocity * 950);
+      speedVal.innerText = `${rpm} RPM`;
     }
 
     controls.update();
     renderer.render(scene, camera);
   }
 
-  window.addEventListener("resize", () => {
-    const w = container.clientWidth || window.innerWidth;
-    const h = container.clientHeight || 500;
+  // Container Resize Handler
+  const resizeObserver = new ResizeObserver(() => {
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    if (w === 0 || h === 0) return;
+
     camera.aspect = w / h;
     camera.updateProjectionMatrix();
     renderer.setSize(w, h);
   });
 
+  resizeObserver.observe(container);
+
   animate();
 }
 
 if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init3Dviewer);
+  document.addEventListener("DOMContentLoaded", initmagnMotr);
 } else {
-  init3Dviewer();
+  initmagnMotr();
 }

@@ -12,7 +12,7 @@ html, body {
 /* 1. Header / Title Positioning */
 header h1 {
   position: absolute;
-  top: 80px;                   /* CHANGE THIS VALUE to move title up/down */
+  top: 20px;                   /* CHANGE THIS VALUE to move title up/down */
   left: 50%;
   transform: translateX(-50%);
   margin: 0;
@@ -25,17 +25,21 @@ header h1 {
   pointer-events: none;
 }
 
-/* 2. Canvas Container & Loader Positioning */
 #canvas-container,
 #container3D {
+  width: 100%;
+  max-width: 100%; 
+  aspect-ratio: 16 / 9;
+  margin: 0 auto;   
   position: relative;
-  width: 100vw;
-  height: calc(100vh - 80px);  /* Adjusts container height */
-  margin-top: 80px;             /* CHANGE THIS VALUE to push 3D viewer down */
 }
 
-#container3D canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
+
+#container3D {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
+

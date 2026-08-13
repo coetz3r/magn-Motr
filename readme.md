@@ -1,18 +1,18 @@
 # 3D viewer Engine
 
 <p align="center">
-  <img src="assets/3D-viewer.png" alt="3D viewer Logo" width="380" />
+  <img src="assets/magn-Motr.png" alt="3D viewer Logo" width="380" />
 </p>
 
 <p align="center">
   <a href="https://coetz3r.github.io/portfolio" target="_blank"><strong>🚀 Live Interactive Demo</strong></a>
 </p>
 
-[![Interactive 3D model viewport screenshot](assets/screenshot.png)](https://github.com/coetz3r/3D-viewer)
+[![Interactive 3D model viewport screenshot](assets/screenshot.jpg)](https://github.com/coetz3r/magn-Motr)
 
 A lightweight, zero-build, plug-and-play 3D WebGL model viewer built with Three.js ES Modules. Download, customize, and use it to bring interactive 3D models to your own web projects.
 
-**Repository:** https://github.com/coetz3r/3D-viewer
+**Repository:** https://github.com/coetz3r/magn-Motr
 
 ---
 
@@ -80,14 +80,14 @@ The included Magna'Motr model is a demonstration of what the viewer can do. It c
 
 The viewer is designed to be adapted to your own project. The Magna'Motr files are provided as the working example; you can replace the model and adjust the viewer without rebuilding the application.
 
-All configuration options live inside `js/3D-viewer.js`.
+All configuration options live inside `js/magn-Motr.js`.
 
 ### 1. Swapping the 3D Model File
-Place your exported `.glb` file into `assets/` and update the file path in `js/3D-viewer.js`:
+Place your exported `.glb` file into `assets/` and update the file path in `js/magn-Motr.js`:
 
 ```javascript
-const modelPath = (typeof viewerData !== "undefined" && viewerData.modelUrl)
-  ? viewerData.modelUrl
+const modelPath = (typeof magnaData !== "undefined" && magnaData.modelUrl)
+  ? mangaData.modelUrl
   : "assets/your_model.glb";
 ```
 
@@ -124,8 +124,8 @@ progressBarFill.style.boxShadow  = "0 0 8px #0088ff";   // Glow radius & color
 ## Quick Start
 
 1. Download or clone this repository.
-2. Replace `assets/3D-viewer.glb` with your own `.glb` or `.gltf` model.
-3. Update the model path in `js/3D-viewer.js` if necessary.
+2. Replace `assets/magn-Motr.glb` with your own `.glb` or `.gltf` model.
+3. Update the model path in `js/magn-Motr.js` if necessary.
 4. Adjust the viewer settings to match your model.
 5. Serve the folder with a local HTTP server.
 6. Open the viewer in your browser.
@@ -158,15 +158,15 @@ Then visit `http://localhost:8000` in your web browser.
 
 ```text
 assets/
-├── 3D-viewer.glb       # Default 3D model asset
-├── 3D-viewer.png       # Header logo
-└── screenshot.png      # Viewport showcase screenshot
+├── magn-Motr.glb       # Default 3D model asset
+├── magn-Motr.png       # Header logo
+└── screenshot.jpg      # Viewport showcase screenshot
 
 css/
 └── style.css           # Viewport & canvas layout styles
 
 js/
-└── 3D-viewer.js        # Core engine, OrbitControls, & loader logic
+└── magn-Motr.js        # Core engine, OrbitControls, & loader logic
 
 index.html              # HTML mount point & ES import map
 LICENSE                 # Open source license text

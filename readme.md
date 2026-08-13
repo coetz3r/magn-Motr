@@ -1,7 +1,7 @@
-# 3D viewer Engine
+# magn'Motr Drive System
 
 <p align="center">
-  <img src="assets/magn-Motr.png" alt="3D viewer Logo" width="380" />
+  <img src="assets/magn-Motr.png" alt="magn'Motr Logo" width="380" />
 </p>
 
 <p align="center">
@@ -9,8 +9,6 @@
 </p>
 
 [![Interactive 3D model viewport screenshot](assets/screenshot.jpg)](https://github.com/coetz3r/magn-Motr)
-
-**magn'Motr** is an open-source, interactive 3D mechanical demonstration and maker project showcasing magnetic motor dynamics and internal swashplate kinematics. Built using vanilla JavaScript and Three.js, it provides real-time kinematic visualization alongside complete CAD and STL production files for physical assembly.
 
 **Repository:** https://github.com/coetz3r/magn-Motr
 
@@ -77,7 +75,7 @@ Open your terminal inside the project root folder and run:
 ```bash
 python3 -m http.server 8000
 ```
-Then navigate to ```http://localhost:8000``` in your web browser.
+Then navigate to `http://localhost:8000` in your web browser.
 
 ---
 
@@ -85,19 +83,34 @@ Then navigate to ```http://localhost:8000``` in your web browser.
 
 ```text
 assets/
-├── magn-Motr.glb       # Default 3D model asset
-├── magn-Motr.png       # Header logo
-└── screenshot.jpg      # Viewport showcase screenshot
+├── magn-Motr.glb                         # WebGL 3D model asset
+├── magn-Motr.png                         # Header logo
+└── screenshot.jpg                        # Viewport showcase screenshot
+
+cad/
+└── magna'motr protOtipe 31jul2026.FCStd  # FreeCAD source project file
 
 css/
-└── style.css           # Viewport & canvas layout styles
+└── style.css                             # Viewport & canvas layout styles
+
+docs/                                     # Project documentation assets
 
 js/
-└── magn-Motr.js        # Core engine, OrbitControls, & loader logic
+└── magn-Motr.js                          # Core Three.js engine & physics logic
 
-index.html              # HTML mount point & ES import map
-LICENSE                 # Open source license text
-README.md               # Documentation
+stl/                                      # 3D-printable manufacturing meshes
+├── cam-disk.stl
+├── carrier-frame.stl
+├── carrier.stl
+├── output-frame.stl
+├── piston-block.stl
+├── piston.stl
+├── rotor.stl
+└── wheel.stl
+
+index.html                                # Web entry point & ES import map
+license.md                                # Open source license text
+readme.md                                 # Repository documentation
 ```
 ---
 

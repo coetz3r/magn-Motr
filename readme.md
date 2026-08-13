@@ -10,7 +10,7 @@
 
 [![Interactive 3D model viewport screenshot](assets/screenshot.jpg)](https://github.com/coetz3r/magn-Motr)
 
-A lightweight, zero-build, plug-and-play 3D WebGL model viewer built with Three.js ES Modules. Download, customize, and use it to bring interactive 3D models to your own web projects.
+**magn'Motr** is an open-source, interactive 3D mechanical demonstration and maker project showcasing magnetic motor dynamics and internal swashplate kinematics. Built using vanilla JavaScript and Three.js, it provides real-time kinematic visualization alongside complete CAD and STL production files for physical assembly.
 
 **Repository:** https://github.com/coetz3r/magn-Motr
 
@@ -18,40 +18,39 @@ A lightweight, zero-build, plug-and-play 3D WebGL model viewer built with Three.
 
 ## Overview
 
-**3D viewer** is a lightweight, zero-build starter template for adding interactive 3D models to websites using Three.js ES Modules.
+**magn'Motr** is an open-source, interactive 3D mechanical demonstration and maker project showcasing magnetic motor dynamics and dynamic swashplate kinematics.
 
-Download the repository, replace the example model, and customize the controls, styling, and interactions to create your own 3D product viewer, mechanical demonstration, engineering model, educational visualization, or interactive presentation.
-
-No npm, bundler, build process, or framework is required. The viewer runs directly in the browser using native ES Modules and Import Maps.
-
-The included Magna'Motr model is a demonstration of what the viewer can do. It can be replaced with your own `.glb` or `.gltf` model.
+Designed as a zero-build, plug-and-play WebGL application, it renders high-precision mechanical motion natively in the browser using Three.js ES Modules. The project pairs a real-time, full-screen interactive simulation with complete CAD models and 3D-printable STL files for hardware fabrication.
 
 ---
 
-## What's Included
+### Key Highlights
 
-- Interactive 3D model viewer
-- GLB/GLTF model loading
-- Orbit, pan, and zoom camera controls
-- Automatic model centering and scaling
-- Configurable mesh transparency
-- Optional mechanical motion / kinematics
-- Responsive WebGL canvas
-- Lightweight loading indicator
-- Plain HTML, CSS, and JavaScript
-- Three.js loaded through ES Modules
-- No build tools or package installation required
+* **Interactive Physics & Controls:** Adjust magnetic force and shaft load dynamically to visualize velocity and torque response in real time.
+* **Automated Housing Transparency:** Outer structural casings render with semi-transparent physical materials so internal pistons and linkages remain visible during operation.
+* **Maker-Ready Assets:** Includes physical CAD source files and 3D-printable STL meshes alongside the web simulation engine.
+* **Zero-Build Architecture:** Runs natively using standard ES Modules—no `npm`, bundlers, or compilation required.
 
 ---
 
-## Features
+## 🛠️ Project Structure & Maker Assets
 
-- **Plug-and-Play Mesh Loading**: Automatically centers and scales any `.glb` or `.gltf` 3D model within the camera viewport.
-- **Automated Shell Transparency**: Scans component names and dynamically applies semi-transparent physical materials to outer casings or frames.
-- **Customizable Kinematics Engine**: Built-in math routines linking rotational motion to linear translation (e.g., swashplate to axial piston displacement).
-- **Minimalist Blue Progress Indicator**: Lightweight, zero-dependency loading bar with visual glow feedback.
-- **Zero-Build Architecture**: Runs natively in all modern web browsers using ES Modules.
-- **Responsive WebGL Canvas**: Auto-resizes smoothly across screen resolutions.
+This repository contains both the web-based WebGL simulation engine and the physical design files needed to build or adapt the mechanical assembly:
+
+* **`/cad`**: Native parametric CAD models and step files.
+* **`/stl`**: 3D-printable mesh files ready for slicing.
+* **`/js`**: Interactive Three.js engine and dynamic load calculation scripts.
+* **`/assets`**: Compressed `.glb` runtime assets and design graphics.
+
+---
+
+## ✨ Features
+
+- **Real-Time Kinematics Simulation**: Interactive swashplate-to-piston displacement powered by custom JS physics loops.
+- **Dynamic Controls Overlay**: Adjust magnetic force and shaft load parameters on the fly to see real-time RPM/velocity feedback.
+- **Automated Shell Transparency**: Outer casings render semi-transparently so internal mechanical linkages remain visible during operation.
+- **Full-Screen Responsive Viewport**: High-DPI canvas auto-resizes to fit any display without build setup or framework overhead.
+- **Zero-Build Architecture**: Runs natively using ES Modules and Import Maps—no `npm`, bundlers, or toolchains required.
 
 ---
 
@@ -66,91 +65,19 @@ The included Magna'Motr model is a demonstration of what the viewer can do. It c
 
 ---
 
-## Technologies
+## Live View & Local Server Setup
 
-- HTML5 & CSS3
-- JavaScript (ES6+ Modules)
-- Three.js (r160+ via ES Import Maps)
-- WebGL
-- Git / GitHub
+Because modern web browsers restrict loading external 3D assets (`.glb`) and ES Modules over `file://` protocols, the project must be served over a local HTTP connection to view it.
 
 ---
 
-## Customization & Tweaking Guide
-
-The viewer is designed to be adapted to your own project. The Magna'Motr files are provided as the working example; you can replace the model and adjust the viewer without rebuilding the application.
-
-All configuration options live inside `js/magn-Motr.js`.
-
-### 1. Swapping the 3D Model File
-Place your exported `.glb` file into `assets/` and update the file path in `js/magn-Motr.js`:
-
-```javascript
-const modelPath = (typeof magnaData !== "undefined" && magnaData.modelUrl)
-  ? mangaData.modelUrl
-  : "assets/your_model.glb";
-```
-
-### 2. Auto-Transparency Keywords & Opacity
-Set keywords to match your CAD or Blender mesh names so the engine knows which outer housings to make transparent:
-
-```javascript
-const outerHousingTerms = ["frame", "block", "carrier", "output", "housing", "casing", "cover"];
-
-// Modify opacity inside loader loop (0.0 = fully clear, 1.0 = solid)
-mat.transparent = true;
-mat.opacity = 0.35;
-```
-
-### 3. Camera Perspective (FOV)
-Adjust wide-angle depth distortion versus a flatter, CAD-style isometric view in Section 1:
-
-```javascript
-// Lower value (e.g. 35 - 45) = Flatter CAD look
-// Higher value (e.g. 65 - 75) = Stronger depth perspective
-const camera = new THREE.PerspectiveCamera(55, width / height, 0.1, 1000);
-```
-
-### 4. Customizing Progress Bar Colors
-Tweak the loading bar color scheme to match your branding:
-
-```javascript
-progressBarFill.style.background = "#0088ff";           // Main color
-progressBarFill.style.boxShadow  = "0 0 8px #0088ff";   // Glow radius & color
-```
-
----
-
-## Quick Start
-
-1. Download or clone this repository.
-2. Replace `assets/magn-Motr.glb` with your own `.glb` or `.gltf` model.
-3. Update the model path in `js/magn-Motr.js` if necessary.
-4. Adjust the viewer settings to match your model.
-5. Serve the folder with a local HTTP server.
-6. Open the viewer in your browser.
-
-The goal is simple: **download → replace the model → customize → serve.**
-
----
-
-## Local Development
-
-Due to modern browser security policies (CORS) regarding ES Modules (`type="module"`) and external 3D file requests, opening `index.html` directly via `file:///...` will cause cross-origin errors. **The project must be served over a local HTTP server.**
-
-### Option A: VSCodium / VS Code Live Server
-1. Install the **Live Server** extension in VSCodium.
-2. Right-click `index.html` in the file explorer and select **Open with Live Server**.
-3. Firefox/Chrome will open `http://127.0.0.1:5500/index.html`.
-
-### Option B: Terminal via Python HTTP Server
-Open your terminal in the project directory and run:
+### 1. Terminal (Python Server)
+Open your terminal inside the project root folder and run:
 
 ```bash
 python3 -m http.server 8000
 ```
-
-Then visit `http://localhost:8000` in your web browser.
+Then navigate to ```http://localhost:8000``` in your web browser.
 
 ---
 
@@ -172,16 +99,6 @@ index.html              # HTML mount point & ES import map
 LICENSE                 # Open source license text
 README.md               # Documentation
 ```
-
----
-
-## Design Goals
-
-- Fast asset loading and zero build complexity
-- Clean, maintainable vanilla JavaScript architecture
-- Modular structure for easy integration into existing sites or CMS platforms
-- Responsive full-screen WebGL presentation
-
 ---
 
 ## License
